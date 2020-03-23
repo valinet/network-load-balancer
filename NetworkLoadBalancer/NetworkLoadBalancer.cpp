@@ -197,11 +197,11 @@ DWORD WINAPI refreshNetworkData(
         {
         case BALANCING_POLICY_ROUND_ROBIN:
         {
-            balpol = BALANCING_POLICY_ROUND_ROBIN_NAME;
+            balpol = NAME_BALANCING_POLICY_ROUND_ROBIN;
             break;
         }
         case BALANCING_POLICY_LEAST_CONNECTIONS:
-            balpol = BALANCING_POLICY_LEAST_CONNECTIONS_NAME;
+            balpol = NAME_BALANCING_POLICY_LEAST_CONNECTIONS;
             break;
         }
         std::wcout << "Balancing these adapters:" << std::endl << 
@@ -417,7 +417,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                         (*info->adapters)[minNameRR].connections++;
                         (*info->adapters)[minNameRR].routeInfo.dwForwardMetric1 = 40;
                     }
-                    balpol = BALANCING_POLICY_ROUND_ROBIN_NAME;
+                    balpol = NAME_BALANCING_POLICY_ROUND_ROBIN;
                     break;
                 }
                 case BALANCING_POLICY_LEAST_CONNECTIONS:
@@ -425,7 +425,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     if (minNameLC[0] != 0) {
                         (*info->adapters)[minNameLC].routeInfo.dwForwardMetric1 = 40;
                     }
-                    balpol = BALANCING_POLICY_LEAST_CONNECTIONS_NAME;
+                    balpol = NAME_BALANCING_POLICY_LEAST_CONNECTIONS;
                     break;
                 }
                 }
@@ -437,6 +437,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 }
             }
             ReleaseMutex(info->ghAdaptersMutex);
+            if ((*info->balancing_policy) == BALANCING_POLICY_LEAST_CONNECTIONS) {
+                Sleep(100);
+            }
             return -1;
         }
     }
