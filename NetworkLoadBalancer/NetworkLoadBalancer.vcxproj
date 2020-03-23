@@ -148,7 +148,7 @@
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BalancingPolicies.h" />
+    <ClInclude Include="common.h" />
     <ClInclude Include="ProcessMonitoringSink.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="utility.h" />

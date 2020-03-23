@@ -7,7 +7,7 @@
 #include <vector>
 #pragma comment(lib, "Iphlpapi.lib")
 
-#include "BalancingPolicies.h"
+#include "common.h"
 #include "ProcessMonitoringSink.h"
 
 #define MALLOC(x) HeapAlloc(GetProcessHeap(), 0, (x))
@@ -468,7 +468,6 @@ int WINAPI wWinMain(
     NetworkRefreshrerParams params;
     HANDLE ht;
     int sample_duration = 1000;
-    const wchar_t CLASS_NAME[] = L"NetworkLoadBalancerMonitoringWindow";
     WNDCLASS wc = { };
     HWND hWnd = NULL;
     WindowProcInfo windowInfo;

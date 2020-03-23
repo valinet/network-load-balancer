@@ -1,4 +1,6 @@
 #pragma once
+const wchar_t CLASS_NAME[] = L"NetworkLoadBalancerMonitoringWindow";
+
 #define BALANCING_POLICY_DEFAULT 0
 #define BALANCING_POLICY_ROUND_ROBIN 1
 #define BALANCING_POLICY_ROUND_ROBIN_NAME L"Round Robin"

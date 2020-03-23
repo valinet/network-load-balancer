@@ -4,14 +4,13 @@
 #include <Windows.h>
 #include <psapi.h>
 
-#include "../NetworkLoadBalancer/BalancingPolicies.h"
+#include "../NetworkLoadBalancer/common.h"
 
 typedef void(WINAPI* tWS)();
 void(WINAPI* pMyFunc)() = NULL;
 BYTE replaced_socket[20];
 HWND daemon;
 UINT msgId;
-const wchar_t CLASS_NAME[] = L"NetworkLoadBalancerMonitoringWindow";
 UINT balancing_policy = 0;
 
 void my_func()
