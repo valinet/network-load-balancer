@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29911.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkLoadBalancer", "NetworkLoadBalancer\NetworkLoadBalancer.vcxproj", "{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NetworkLoadBalancerLibrary", "NetworkLoadBalancerLibrary\NetworkLoadBalancerLibrary.vcxproj", "{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Debug|x64.ActiveCfg = Debug|x64
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Debug|x64.Build.0 = Debug|x64
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Debug|x86.ActiveCfg = Debug|Win32
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Debug|x86.Build.0 = Debug|Win32
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Release|x64.ActiveCfg = Release|x64
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Release|x64.Build.0 = Release|x64
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Release|x86.ActiveCfg = Release|Win32
+		{1A7EDD53-40D5-4FB4-8015-A1D6B1E197C1}.Release|x86.Build.0 = Release|Win32
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Debug|x64.ActiveCfg = Debug|x64
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Debug|x64.Build.0 = Debug|x64
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Debug|x86.ActiveCfg = Debug|Win32
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Debug|x86.Build.0 = Debug|Win32
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Release|x64.ActiveCfg = Release|x64
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Release|x64.Build.0 = Release|x64
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Release|x86.ActiveCfg = Release|Win32
+		{2BDAAF02-D8C5-4EA0-911B-7011E16E667A}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D7BE1D4-C115-4D1E-B911-7C0A01CA62A0}
+	EndGlobalSection
+EndGlobal

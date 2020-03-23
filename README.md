@@ -10,6 +10,8 @@ By default, each monitored application will have its connections assigned based 
 ## How to run?
 I recommend compiling the application and adding a scheduled task that will run the it on each log on with highest privileges (in order to be able to monitor all processes and most importantly, change system routing preferences).
 
+In order to successfully run the application, you have to compile the DLL (library project) for both 32-bit and 64-bit, so that it generates a DLL for each of the architectures.
+
 ## How does it work?
 The application uses Windows Management Instrumentation (WMI) to monitor network load and process creation. When a new process is created, the application checks the name of the process against a whitelist of apps to be injected (moduleNameIsMonitored in utility.cpp). If found on the list, the application loads an appropiate DLL into the process, which will send a message back to the application's window every time a "connect" call is made in the Winsock2 API. When the message is received, the application will adjust the Windows routing metrics so as to favour the route coresponding to the chosen NIC based on the criteria for that application, if specified, or the global, default criteria.
 
