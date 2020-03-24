@@ -1,7 +1,7 @@
 # Trivial Network Load Balancer
 Trivial Network Load Balancer is a simple daemon for balancing traffic across multiple routes which lead to the Internet. By default, client Windows does not include any load balancing logic, so that when your computer has two or more NICs (network interface cards) connected to the Internet, Windows will always use only one of them for all connections. This is sub-optimal, as certain applications, like torrents and download accelerators (programs that download a file using multiple connections) could benefit if the connections were assigned to all the different interfaces. For example, with an optimal assignment and 2 NICs, potential transfer speed could be doubled.
 
-My opinion is that omitting load balancing logic from the OS is intentional from Microsoft's part, so as not to piss off ISPs when people increase their connection speed without having to pay extra. This is further established by the fact that server versions of Windows include load balancing in the kernel. TNLB is a user space attempt as solving this issue.
+My opinion is that omitting load balancing logic from the OS is intentional from Microsoft's part, so as not to piss off ISPs when people increase their connection speed without having to pay extra. This is further established by the fact that server versions of Windows include load balancing in the kernel. TNLB is a user space attempt at solving this issue.
 
 TLNB injects itself into certain executables once launched. Then, each time the monitored application connects on a socket, the load balancer will be notified and will attempt to assign the connection to an appropiate NIC based on various criteria.
 
