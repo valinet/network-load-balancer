@@ -62,7 +62,9 @@ HRESULT ProcessMonitoringSink::Indicate(long lObjCount, IWbemClassObject** pArra
                                         cn.intVal, 
                                         pKernel32LoadLibraryWAddr, 
                                         bIs64BitProcess,
-                                        fnIsWow64Process
+                                        fnIsWow64Process,
+                                        pDllMainAddr,
+                                        hInjection
                                         );
                                 }
                             }

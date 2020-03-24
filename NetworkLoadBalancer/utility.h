@@ -16,5 +16,7 @@ void injectProcess(
 	int processId, 
 	DWORD pKernel32LoadLibraryWAddr, 
 	BOOL bIs64BitProcess,
-	LPFN_ISWOW64PROCESS fnIsWow64Process
+	LPFN_ISWOW64PROCESS fnIsWow64Process,
+	DWORD pDllMainAddr,
+	uint64_t hInjection
 	);

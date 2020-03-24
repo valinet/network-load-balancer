@@ -198,7 +198,9 @@ void injectProcess(
     int processId, 
     DWORD pKernel32LoadLibraryWAddr, 
     BOOL bIs64BitProcess,
-    LPFN_ISWOW64PROCESS fnIsWow64Process
+    LPFN_ISWOW64PROCESS fnIsWow64Process,
+    DWORD pDllMainAddr,
+    uint64_t hInjection
     ) 
 {
     wchar_t szLibPath[_MAX_PATH];
@@ -213,9 +215,12 @@ void injectProcess(
     DWORD res = 0;
     FARPROC hAdrLoadLibrary = NULL;
     HMODULE* hMods = NULL;
-    DWORD hModuleArrayInitialBytes = 100 * sizeof(HMODULE);
+    DWORD hModuleArrayInitialBytesInitial = 100 * sizeof(HMODULE);
+    DWORD hModuleArrayInitialBytes = hModuleArrayInitialBytesInitial;
     DWORD hModuleArrayBytesNeeded = 0;
     SIZE_T i = 0;
+    DWORD cbNeeded;
+
 
     hProcess = OpenProcess(
         PROCESS_ALL_ACCESS,
@@ -251,6 +256,7 @@ void injectProcess(
     }
     if (bResult && bIs64BitProcess)
     {
+        hModuleArrayInitialBytes = hModuleArrayInitialBytesInitial;
         hMods = (HMODULE*)calloc(
             hModuleArrayInitialBytes, 1
             );
@@ -279,17 +285,17 @@ void injectProcess(
                 );
             assert(bResult == TRUE);
         }
+        GetSystemDirectory(szSysDir, _MAX_PATH);
+        CharLower(szSysDir);
+        if (szSysDir[lstrlen(szSysDir) - 1] != '\\')
+        {
+            lstrcat(szSysDir, L"\\");
+        }
+        lstrcat(szSysDir, L"kernel32.dll");
         for (i = 0; i < hModuleArrayBytesNeeded / sizeof(HMODULE); ++i)
         {
             GetModuleFileNameEx(hProcess, hMods[i], szTmpLibPath, _MAX_PATH);
             CharLower(szTmpLibPath);
-            GetSystemDirectory(szSysDir, _MAX_PATH);
-            CharLower(szSysDir);
-            if (szSysDir[lstrlen(szSysDir) - 1] != '\\')
-            {
-                lstrcat(szSysDir, L"\\");
-            }
-            lstrcat(szSysDir, L"kernel32.dll");
             if (wcsstr(szTmpLibPath, szSysDir))
             {
                 hKernel32 = hMods[i];
@@ -346,7 +352,6 @@ void injectProcess(
             }
         }
     }
-    wprintf(L">>> Injected %s into PID: %d.\n", szLibPath, processId);
 
     pLibRemote = VirtualAllocEx(
         hProcess,
@@ -356,7 +361,6 @@ void injectProcess(
         PAGE_READWRITE
         );
     assert(pLibRemote != NULL);
-
     bResult = WriteProcessMemory(
         hProcess,
         pLibRemote,
@@ -365,7 +369,6 @@ void injectProcess(
         NULL
         );
     assert(bResult == TRUE);
-
     hThread = CreateRemoteThread(
         hProcess,
         NULL,
@@ -376,24 +379,90 @@ void injectProcess(
         NULL
         );
     assert(hThread != NULL);
-
     WaitForSingleObject(
         hThread,
         INFINITE
         );
-
     GetExitCodeThread(
         hThread,
         &hLibModule
         );
     assert(hLibModule != NULL);
-
     VirtualFreeEx(
         hProcess,
         (LPVOID)pLibRemote,
         0,
         MEM_RELEASE
         );
+
+    if (NULL != fnIsWow64Process) 
+    {
+        res = fnIsWow64Process(hProcess, &bResult);
+        assert(res == TRUE);
+    }
+    if (bResult && bIs64BitProcess)
+    {
+        hInjection = pDllMainAddr;
+    }
+    hModuleArrayInitialBytes = hModuleArrayInitialBytesInitial;
+    hMods = (HMODULE*)calloc(
+        hModuleArrayInitialBytes, 1
+        );
+    bResult = EnumProcessModulesEx(
+        hProcess,
+        hMods,
+        hModuleArrayInitialBytes,
+        &hModuleArrayBytesNeeded,
+        LIST_MODULES_ALL
+        );
+    assert(bResult == TRUE);
+    if (hModuleArrayInitialBytes < hModuleArrayBytesNeeded)
+    {
+        hMods = (HMODULE*)realloc(
+            hMods,
+            hModuleArrayBytesNeeded
+            );
+        hModuleArrayInitialBytes = hModuleArrayBytesNeeded;
+        bResult = EnumProcessModulesEx(
+            hProcess,
+            hMods,
+            hModuleArrayInitialBytes,
+            &hModuleArrayBytesNeeded,
+            LIST_MODULES_ALL
+            );
+        assert(bResult == TRUE);
+    }
+    CharLower(szLibPath);
+    for (i = 0; i < hModuleArrayBytesNeeded / sizeof(HMODULE); ++i)
+    {
+        bResult = GetModuleFileNameEx(hProcess, hMods[i], szTmpLibPath, _MAX_PATH);
+        CharLower(szTmpLibPath);
+        if (wcsstr(szTmpLibPath, szLibPath))
+        {
+            break;
+        }
+    }
+    hThread = CreateRemoteThread(
+        hProcess,
+        NULL,
+        0,
+        (LPTHREAD_START_ROUTINE)((uint64_t)hMods[i] + (uint64_t)hInjection),
+        NULL,
+        0,
+        NULL
+        );
+    WaitForSingleObject(
+        hThread,
+        INFINITE
+        );
+    GetExitCodeThread(
+        hThread,
+        &hLibModule
+        );
+    assert(hLibModule != NULL);
+    free(hMods);
+
+    wprintf(L">>> Injected %s into PID: %d.\n", szLibPath, processId);
 
     CloseHandle(hProcess);
 }

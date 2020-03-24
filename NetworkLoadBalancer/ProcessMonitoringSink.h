@@ -4,6 +4,7 @@
 #include <Windows.h>
 #include <wbemidl.h>
 #include <dbghelp.h>
+#include <shlwapi.h>
 #pragma comment(lib, "wbemuuid.lib")
 #pragma comment(lib, "Dbghelp.lib")
 
@@ -15,7 +16,9 @@ class ProcessMonitoringSink : public IWbemObjectSink
     bool bDone;
     BOOL bIs64BitProcess = FALSE;
     DWORD pKernel32LoadLibraryWAddr = 0;
+    DWORD pDllMainAddr = 0;
     LPFN_ISWOW64PROCESS fnIsWow64Process = NULL;
+    uint64_t hInjection;
 
 public:
     ProcessMonitoringSink() 
@@ -41,7 +44,53 @@ public:
                 szFileName,
                 "LoadLibraryW"
                 );
+            GetModuleFileName(
+                GetModuleHandle(NULL),
+                szFileName,
+                _MAX_PATH
+                );
+            PathRemoveFileSpec(szFileName);
+            lstrcat(
+                szFileName,
+                L"\\NetworkLoadBalancerLibraryWin32.dll"
+                );
+            pDllMainAddr = GetSysWOW64Address(
+                szFileName,
+                "initialize"
+                );
         }
+        wchar_t szLibPath[_MAX_PATH];
+        GetModuleFileName(
+            GetModuleHandle(NULL),
+            szLibPath,
+            _MAX_PATH
+            );
+        PathRemoveFileSpec(szLibPath);
+        lstrcat(
+            szLibPath,
+            L"\\NetworkLoadBalancerLibrary"
+            );
+        if (headers->FileHeader.Machine == IMAGE_FILE_MACHINE_AMD64)
+        {
+            lstrcat(
+                szLibPath,
+                L"x64.dll"
+                );
+        }
+        else
+        {
+            lstrcat(
+                szLibPath,
+                L"Win32.dll"
+                );
+        }
+        HMODULE hInjectionDll = LoadLibrary(szLibPath);
+        FARPROC hInjectionMainFunc = GetProcAddress(
+            hInjectionDll,
+            "initialize"
+            );
+        hInjection = (DWORD)hInjectionMainFunc - (DWORD)hInjectionDll;
+        FreeLibrary(hInjectionDll);
         
         m_lRef = 0; 
     }

@@ -63,25 +63,19 @@ BOOL apply_patch(
 	return bSuccess;
 }
 
-BOOL CALLBACK GetDaemon(
-	_In_ HWND   hwnd,
-	_In_ LPARAM lParam
-	)
-{
-	HWND* daemon = reinterpret_cast<HWND*>(lParam);
-	TCHAR name[100];
-	GetClassName(hwnd, name, 100);
-	if (wcsstr(name, CLASS_NAME)) {
-		*daemon = hwnd;
-		return FALSE;
-	}
-	return TRUE;
-}
-
 DWORD WINAPI initialize(
 	LPVOID param
 	)
 {
+	TCHAR szFileName[_MAX_PATH];
+
+	GetModuleBaseName(GetCurrentProcess(), GetModuleHandle(NULL), szFileName, _MAX_PATH);
+
+	if (wcsstr(szFileName, L"IDMan.exe"))
+	{
+		balancing_policy = BALANCING_POLICY_ROUND_ROBIN;
+	}
+
 	msgId = RegisterWindowMessage(CLASS_NAME);
 
 	SIZE_T addr;
@@ -109,7 +103,7 @@ DWORD WINAPI initialize(
 		memcpy((void*)((SIZE_T)pMyFunc), replaced_socket, orig_size_socket);
 		apply_patch((SIZE_T)pMyFunc + orig_size_socket, (SIZE_T)(addr + orig_size_socket), &orig_size, replaced);
 	}
-	EnumWindows(GetDaemon, reinterpret_cast<LPARAM>(&daemon));
+	daemon = FindWindow(CLASS_NAME, NULL);
 
 	return 0;
 }
@@ -123,22 +117,6 @@ BOOL APIENTRY DllMain(
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-	{
-		TCHAR szFileName[_MAX_PATH];
-
-		GetModuleBaseName(GetCurrentProcess(), GetModuleHandle(NULL), szFileName, _MAX_PATH);
-
-		if (wcsstr(szFileName, L"IDMan.exe"))
-		{
-			balancing_policy = BALANCING_POLICY_ROUND_ROBIN;
-		}
-
-		//MessageBox(NULL, szFileName, L"Injected", 0);
-
-		CreateThread(NULL, 0, initialize, NULL, 0, NULL);
-
-		break;
-	}
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
